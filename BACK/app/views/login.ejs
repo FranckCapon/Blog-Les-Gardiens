@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.topology.min.js"></script>
+
+
+    <title>Les Gardiens de la légendes !</title>
+</head>
+
+<body>
+    <div id="vantajs" style=" width: 100vw; height: 100vh; ">
+    <header
+        class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 text-white border-bottom shadow-sm bg-transparent">
+        <nav class="my-2 my-md-0 mr-md-3">
+            <a class="p-2 text-white" href="/v1/">Accueil</a>
+             <%# pour vérifier le status de l'utilisateur, on utilise la variable user qu'on a ajouté dans reponse.locals côté express %>
+            <%# elle est forcément définie, on peut y accéder directement %>
+            <% if (user !== false) {%>
+                <a class="p-2 text-white" href="/v1">Bonjour  --></a>
+                <a class="p-2 text-white" href="/v1/deconnexion">Se déconnecter</a>
+                <% if (user.role === 'admin') {%>
+                    <a class="p-2 text-white" href="/v1/admin">Admin</a>
+                <% } %>
+            <% } else { %>
+                <a class="p-2 text-white" href="/v1/inscription">S'inscrire</a>
+                <a class="p-2 text-white" href="/v1/connexion">Se connecter</a>
+                <a class="p-2 text-white" href="/v1/deconnexion">Se deconnecter</a>
+            <% } %>
+
+        </nav>
+    </header>
+    <main class="container">
+
+        <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center text-white">
+            <h2 class="h1 display">Etes-vous prêt a pénétrer dans un monde inconnu ?</h2>
+            <p class="lead">Et a découvrir une communauté légendaire..</p>
+        </div>
+
+        <%# en cas d'erreur, on passera une variable error à notre vue %>
+        <% if (locals.error) {%>
+            <div class="error"><%= error %></div>
+        <% } %>
+        <div class="row">
+            <div class="col-6 offset-3">
+                <form action="/v1/connexion" method="POST" class="form-signup">
+
+                    <div class="form-label-group">
+                        <input type="pseudo" class="form-control" id="pseudo" name="pseudo" 
+                            placeholder="Votre pseudo">
+                        <label for=""></label>
+                    </div>
+
+                    <div class="form-label-group">
+                        <input type="password" class="form-control" id="password" name="password"
+                            placeholder="Votre mot de passe">
+                    
+                    </div>
+                    <div class="checkbox mb-3 text-white">
+                        <label>
+                            <input type="checkbox" value="remember-me" name="remember"> Se souvenir de moi
+                        </label>
+                    </div>
+                    <button class="btn btn-lg btn-dark btn-block" type="submit">Se connecter</button>
+                </form>
+            </div>
+        </div>
+
+
+
+
+
+    </main>
+    <footer class="pt-4 my-md-5 pt-md-5 border-top">
+        <div class="row">
+            <div class="col-12 col-md text-center">
+                <small class="d-block mb-3 text-muted">Les gardiens de la légende © 2020-2021</small>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+ <!--  Ici le module de configuration de topology :)  -->
+ <script>
+    VANTA.TOPOLOGY({
+        el: "#vantajs",
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: true,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00,
+        color: 0x968d4e,
+        backgroundColor: 0xd2525
+    })
+</script>
+    </body>
+    
+    </html>

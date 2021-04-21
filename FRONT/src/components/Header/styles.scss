@@ -1,0 +1,112 @@
+@use '../../styles/vars';
+
+.header {
+  background-size: cover !important;
+  background-position: center center;
+  margin: vars.$margin;
+
+  &__menu {
+     background-color: rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 4px #333;
+
+  }
+
+  &__logo {
+    width: 3rem;
+    margin-right: 1rem;
+  }
+
+  &__title {
+    font-size: 2rem !important;
+    text-transform: uppercase;
+    color: #000000;
+    text-decoration: none;
+
+  }
+
+}
+
+.container-menu {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+
+.container-logo {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.item.header__nav {
+  text-transform: uppercase;
+  font-size: 1rem;
+}
+
+.ui.grid.header {
+  border: vars.$border;
+  margin: vars.$margin;
+  padding-left: vars.$padding;
+
+}
+
+.ui.borderless.header__menu__key {
+  background-color: transparent;
+}
+
+.item {
+  color: #000000;
+  font-size: 30px;
+
+}
+
+.ui.borderless.header__menu__key.menu {
+  margin: -30px;
+  border: none;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  border-radius: none;
+
+}
+
+.button_deconnexion {
+  color: #000;
+  font-family: Lato, Helvetica Neue, Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  text-transform: uppercase;
+  border: none;
+  background-color: transparent;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 1rem;
+  text-shadow: 0 0 4px #333;
+  margin-left: 2rem;
+}
+
+button.button_deconnexion:hover {
+  text-shadow: 1px 1px 2px black;
+  cursor: pointer;
+}
+
+.deconnexion {
+  display: flex;
+  justify-content: space-around;
+}
+
+.two.wide.column {
+
+  margin: 0 1rem;
+}
+
+.header__nav:hover {
+  text-shadow: 1px 1px 2px black !important;
+  cursor: pointer;
+  color: black;
+}
+
+.ui.menu {
+  border: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border-radius: none;
+}

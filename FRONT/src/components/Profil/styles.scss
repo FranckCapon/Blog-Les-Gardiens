@@ -1,0 +1,23 @@
+.ui.card>.content p, .ui.cards>.card>.content p {
+    color:    #14213D;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.ui.card.profil {
+  width: 100%;
+  font-size: 1.5rem;
+  text-align: center;
+  border: 1px solid #A89565 !important;
+  border-radius: 8px !important;
+  box-shadow: 3px 3px 5px #666;
+  text-shadow: 0 0 1px #333;
+  color:black;
+   background-color: rgba(255, 255, 255, 0.6);
+}
+
+.info {
+  padding-right: 1rem;
+  text-transform: uppercase;
+}

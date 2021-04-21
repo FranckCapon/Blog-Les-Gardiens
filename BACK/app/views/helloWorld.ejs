@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Les Gardiens de la légende</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.topology.min.js"></script>
+
+    <!--  pour plus d'infos sur vanta.js : https://www.vantajs.com/?effect=birds -->
+
+
+</head>
+
+<body>
+
+    <div id="vantajs" style=" width: 100vw; height: 100vh; ">
+
+
+
+
+
+        <header style="padding: 5rem; color: azure;">
+
+            <header
+                class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 text-white border-bottom shadow-sm bg-transparent">
+                <nav class="my-2 my-md-0 mr-md-3">
+                    <a class="p-2 text-white" href="/v1/">Accueil</a>
+                    <%# pour vérifier le status de l'utilisateur, on utilise la variable user qu'on a ajouté dans reponse.locals côté express %>
+                    <%# elle est forcément définie, on peut y accéder directement %>
+                    <% if (user !== false) {%>
+                    <a class="p-2 text-white" href="/v1">Bonjour <%= user.firstname %></a>
+                    <a class="p-2 text-white" href="/v1/deconnexion">Se déconnecter</a>
+                    <% if (user.role === 'admin') {%>
+                    <a class="p-2 text-white" href="/v1/admin">Admin</a>
+                    <% } %>
+                    <% } else { %>
+                    <a class="p-2 text-white" href="/v1/inscription">S'inscrire</a>
+                    <a class="p-2 text-white" href="/v1/connexion">Se connecter</a>
+                    <a class="p-2 text-white" href="/v1/deconnexion">Se deconnecter</a>
+                    <% } %>
+
+                </nav>
+            </header>
+
+
+            <h1 style="text-align: center; text-shadow: 4px 8px 10px rgb(88, 165, 216);">"<%= helloWorld %>"</h1>
+        </header>
+
+
+    </div>
+
+
+    <!--  Ici le module de configuration de topology :)  -->
+    <script>
+        VANTA.TOPOLOGY({
+            el: "#vantajs",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: true,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0x968d4e,
+  backgroundColor: 0xd2525
+        })
+    </script>
+
+
+
+</body>
+
+</html>

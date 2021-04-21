@@ -1,0 +1,40 @@
+
+
+.ui.button{
+  border: 1px solid #A89565 !important;
+}
+
+.ui.fullscreen.modal.transition.visible.active {
+  padding: 1rem;
+  margin: auto;
+  width: 25% !important;
+  left: auto !important;
+  text-align: center;
+}
+
+
+#field-newDescription::placeholder{
+  text-align: center;;
+  color: rgb(189, 116, 8);
+}
+
+.name_events{
+  margin: auto;
+}
+
+.addEvent>.container-field>.field{
+  width:100%;
+  text-align: center;
+color: black;
+}
+
+.button-radio {
+  display: flex;
+    justify-content: center;
+    color: black;
+    align-items: center;
+}
+
+textarea{
+ width: 100%;
+}

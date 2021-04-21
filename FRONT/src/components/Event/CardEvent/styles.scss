@@ -1,0 +1,32 @@
+
+.ui.card .meta, .ui.cards>.card .meta,
+.ui.cards>.card>.content>.meta+.description {
+  color:  #14213D;
+  text-align: justify;
+  padding:1rem;
+}
+
+.ui.fluid.card.card {
+  padding:1rem;
+}
+
+.header.tag {
+  margin: auto;
+  width: 30%;
+margin: 1rem auto 2rem;
+}
+
+.ui.card .meta, .ui.cards>.card .meta>p {
+ color: #14213D;
+}
+
+@media (max-width: 900px) { 
+  .ui.cards a.card, .ui.link.card, .ui.link.cards .card, .a.ui.card {
+    width: 100%;
+  }
+}
+
+.ui.card>.content p.participation {
+display: flex;
+flex-direction: column;
+}

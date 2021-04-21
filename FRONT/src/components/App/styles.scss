@@ -1,0 +1,54 @@
+.app {
+  // padding: 1.875rem !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 10% !important;
+  background-size: cover !important;
+  // background-repeat: no-repeat !important;
+  font-family: 'Baloo Tammudu 2', cursive;
+  background-attachment: fixed !important;
+}
+
+h1 {
+  color: #14213d;
+  font-size: 1.7rem !important;
+  text-transform: uppercase;
+}
+
+.footer,
+.header,
+.rgpd,
+.gardiens {
+  border: 1px solid #A89565 !important;
+  border-radius: 8px !important;
+  box-shadow: 3px 3px 5px #666;
+  text-shadow: 0 0 1px #333;
+  color: black;
+}
+
+.rgpd,
+.gardiens {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.rgpd>p {
+  font-style: italic;
+  font-size: 16px;
+}
+
+.rgpd>a {
+  color: black !important;
+  text-decoration: underline !important;
+}
+
+.ui.card>.content>.header:not(.ui) {
+  width: 100%;
+  margin: 1rem auto 2rem;
+  background: #A89565;
+  color: #14213D;
+}
+
+.ui.card>.content>.header:not(.ui).tag {
+  width: 30%;
+}

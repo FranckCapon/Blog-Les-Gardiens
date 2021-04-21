@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.topology.min.js"></script>
+
+    <title>Les Gardiens de la légendes !</title>
+</head>
+
+<body>
+
+<div id="vantajs" style=" width: 100vw; height: 100vh; ">
+    <header
+        class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-transparent text-white border-bottom shadow-sm ">
+        <nav class="my-2 my-md-0 mr-md-3">
+            <a class="p-2 text-white" href="/v1/">Accueil</a>
+            <%# pour vérifier le status de l'utilisateur, on utilise la variable user qu'on a ajouté dans reponse.locals côté express %>
+            <%# elle est forcément définie, on peut y accéder directement %>
+            <% if (user !== false) {%>
+            <a class="p-2 text-white" href="/v1">Bonjour <%= user.firstname %></a>
+            <a class="p-2 text-white" href="/v1/deconnexion">Se déconnecter</a>
+            <% if (user.role === 'admin') {%>
+            <a class="p-2 text-white" href="/admin">Admin</a>
+            <% } %>
+            <% } else { %>
+            <a class="p-2 text-white" href="/v1/inscription">S'inscrire</a>
+            <a class="p-2 text-white" href="/v1/connexion">Se connecter</a>
+            <a class="p-2 text-white" href="/v1/deconnexion">Se deconnecter</a>
+            <% } %>
+
+        </nav>
+    </header>
+    <main class="container">
+
+
+
+        <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center text-white">
+            <h2 class="h1 display">Etes-vous prêt a pénétrer dans un monde inconnu ?</h2>
+            <p class="lead">Et a découvrir une communauté légendaire..</p>
+        </div>
+        <div class="col-6 offset-3">
+        <form action="/v1/inscription" method="POST" class="form-signin">
+
+            <div class="form-label-group">
+                <input type="lastname" class="form-control" id="lastName" name="lastName"
+                    aria-describedby="lastnameHelp" placeholder="Votre nom">
+                <label for=""></label>
+            </div>
+
+            <div class="form-label-group">
+                <input type="firstname" class="form-control" id="firstName" name="firstName"
+                    aria-describedby="firstnameHelp" placeholder="Votre prénom">
+                <label for=""></label>
+            </div>
+
+            <%# en cas d'erreur, on passera une variable error à notre vue %>
+            <% if (locals.errorEmail) {%>
+            <div class="error"><%= errorEmail %></div>
+            <% } %>
+
+            <%# en cas d'erreur, on passera une variable error à notre vue %>
+            <% if (locals.error) {%>
+            <div class="error"><%= error %></div>
+            <% } %>
+
+            <div class="form-label-group">
+                <input type="email" class="form-control" id="emailAddress" name="emailAddress"
+                    aria-describedby="emailHelp" placeholder="Votre email">
+                <label for=""></label>
+                <small id="emailHelp" class="form-text text-muted text-white">Nous ne partagerons jamais votre courriel... ou alors
+                    seulement contre une trés grosse somme d'argent..</small>
+            </div>
+            <%# en cas de MDP trop court / no alphanumerique, on passera une variable errorMdpLength à notre vue %>
+            <% if (locals.errorMdpLength) {%>
+            <div class="error"><%= errorMdpLength %></div>
+            <% } %>
+
+            <div class="form-label-group">
+                <input type="password" class="form-control" id="password" name="password"
+                    placeholder="Votre mot de mot de passe">
+                <label for=""></label>
+            </div>
+            <%# en cas de MDP non semblable, on passera une variable errorMdp à notre vue %>
+            <% if (locals.errorMdp) {%>
+            <div class="error"><%= errorMdp %></div>
+            <% } %>
+
+            <div class="form-label-group">
+                <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm"
+                    placeholder="Confirmez votre mot de passe">
+                <label for=""></label>
+            </div>
+
+            <div class="form-label-group">
+                <input type="pseudo" class="form-control" id="pseudo" name="pseudo" placeholder="Votre pseudo">
+                <label for=""></label>
+            </div>
+
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-dark btn-block">Envoyer</button>
+            </div>
+        </form>
+    </div>
+    </main>
+    <footer class="pt-4 my-md-5 pt-md-5 border-top">
+        <div class="row">
+            <div class="col-12 col-md text-center">
+                <small class="d-block mb-3 text-muted">Les gardiens de la légende © 2020-2021</small>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+
+    <!--  Ici le module de configuration de topology :)  -->
+    <script>
+        VANTA.TOPOLOGY({
+            el: "#vantajs",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: true,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0x968d4e,
+            backgroundColor: 0xd2525
+        })
+    </script>
+
+</body>
+
+</html>
