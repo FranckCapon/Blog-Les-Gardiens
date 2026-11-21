@@ -1,8 +1,7 @@
 # Les Gardiens de la Légende — nouvelle version
 
 Refonte du site du club avec une stack actuelle : **Next.js 16** (App Router) en TypeScript,
-**Drizzle ORM** sur PostgreSQL, **Tailwind CSS v4** et **shadcn/ui**.
-L'authentification (Better Auth) arrive à l'étape 3 du plan de migration.
+**Drizzle ORM** sur PostgreSQL, **Better Auth**, **Tailwind CSS v4** et **shadcn/ui**.
 
 L'ancienne application (`../FRONT` et `../BACK`) reste en place jusqu'à la bascule.
 
@@ -16,8 +15,9 @@ L'ancienne application (`../FRONT` et `../BACK`) reste en place jusqu'à la basc
 ```bash
 cd web
 npm install
-cp .env.example .env.local   # puis adapter DATABASE_URL si besoin
+cp .env.example .env.local   # puis renseigner BETTER_AUTH_SECRET
 npm run db:up                # lance PostgreSQL 17 en Docker
+npm run db:migrate           # crée les tables
 npm run dev                  # http://localhost:3000
 ```
 
@@ -27,6 +27,8 @@ npm run dev                  # http://localhost:3000
 | --------------------- | ------------------------------------------------------ |
 | `npm run dev`         | Serveur de développement                               |
 | `npm run build`       | Build de production                                    |
+| `npm run test`        | Tests unitaires (Vitest)                               |
+| `npm run role`        | Change le rôle d'un membre                             |
 | `npm run lint`        | ESLint (règles Next.js + TypeScript)                   |
 | `npm run typecheck`   | Vérification des types TypeScript                      |
 | `npm run format`      | Formatage Prettier (tri des classes Tailwind inclus)   |
@@ -35,6 +37,36 @@ npm run dev                  # http://localhost:3000
 | `npm run db:migrate`  | Applique les migrations du dossier `drizzle/`          |
 | `npm run db:pull`     | Génère un schéma Drizzle à partir d'une base existante |
 | `npm run db:studio`   | Ouvre Drizzle Studio pour explorer la base             |
+
+## Comptes et rôles
+
+L'authentification est gérée par [Better Auth](https://www.better-auth.com) :
+inscription avec pseudo, prénom, nom, e-mail et mot de passe (10 caractères minimum),
+confirmation de l'adresse par e-mail, mot de passe oublié, et session dans un cookie
+`HttpOnly` (`Secure` en production), jamais accessible au JavaScript de la page.
+Sans `SMTP_URL`, les e-mails (liens de confirmation et de réinitialisation) s'affichent
+dans la console du serveur.
+
+| Rôle         | Peut                                                                     |
+| ------------ | ------------------------------------------------------------------------ |
+| `membre`     | Gérer son profil, s'inscrire aux événements (rôle par défaut)            |
+| `moderateur` | En plus : rédiger et modifier des articles, organiser des événements     |
+| `admin`      | Tout, y compris supprimer du contenu et gérer les membres et leurs rôles |
+
+Les permissions sont définies dans `src/lib/auth/permissions.ts`. Chaque page
+d'administration et chaque Server Action qui écrit des données commence par
+`requirePermission(...)` (`src/lib/auth/guards.ts`) : c'est ce contrôle côté serveur qui
+fait foi. Le rôle ne peut pas être choisi à l'inscription ni modifié par le membre ;
+la liste des membres n'est accessible qu'aux administrateurs.
+
+Pour désigner le premier administrateur, après son inscription :
+
+```bash
+npm run role -- adresse@exemple.fr admin
+```
+
+Les comptes repris de l'ancienne base gardent leur mot de passe : les hashes bcrypt sont
+acceptés, puis remplacés par un hash scrypt au prochain changement de mot de passe.
 
 ## Ajouter un composant shadcn/ui
 
@@ -50,7 +82,12 @@ Les composants sont copiés dans `src/components/ui/` et peuvent être modifiés
 src/
   app/              routes (App Router)
   components/ui/    composants shadcn/ui
-  lib/db/           client et schéma Drizzle
+  app/(compte)/     connexion, inscription, mot de passe oublié
+  app/profil/       profil du membre connecté
+  app/admin/        administration (modérateurs et administrateurs)
+  lib/auth/         Better Auth : configuration, rôles, contrôles d'accès
+  lib/db/schema/    schéma Drizzle (comptes et contenu du site)
+  proxy.ts          redirection rapide vers la connexion sur les pages privées
   lib/utils.ts      utilitaire cn() pour les classes Tailwind
 drizzle/            migrations SQL versionnées (créé par db:generate)
 ```
