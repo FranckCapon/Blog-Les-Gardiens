@@ -1,14 +1,14 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { type FormState, formValues, pgCode, validId } from "@/lib/actions";
 import { requirePermission } from "@/lib/auth/guards";
 import { db } from "@/lib/db";
-import { event } from "@/lib/db/schema";
-import { eventInput, fieldErrors } from "@/lib/validation/content";
+import { event, eventGame, game } from "@/lib/db/schema";
+import { eventFormData, eventInput, fieldErrors } from "@/lib/validation/content";
 
 function refresh(id: number) {
   // « games » aussi : les fiches de jeux listent les événements à venir.
@@ -17,11 +17,34 @@ function refresh(id: number) {
   updateTag("games");
 }
 
-function parse(formData: FormData) {
-  const parsed = eventInput.safeParse(Object.fromEntries(formData));
-  return parsed.success
-    ? { data: parsed.data }
-    : { state: { errors: fieldErrors(parsed.error), values: formValues(formData) } };
+async function parse(formData: FormData) {
+  const parsed = eventInput.safeParse(eventFormData(formData));
+  if (!parsed.success) {
+    return { state: { errors: fieldErrors(parsed.error), values: formValues(formData) } };
+  }
+  const { gameIds, ...data } = parsed.data;
+  if (gameIds.length > 0) {
+    const found = await db.select({ id: game.id }).from(game).where(inArray(game.id, gameIds));
+    if (found.length !== gameIds.length) {
+      return {
+        state: {
+          errors: { gameIds: "Un des jeux choisis n'est plus dans la ludothèque." },
+          values: formValues(formData),
+        },
+      };
+    }
+  }
+  return { data, gameIds };
+}
+
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+/** Remplace le programme de jeux d'un événement. */
+async function setGames(tx: Tx, eventId: number, gameIds: number[]) {
+  await tx.delete(eventGame).where(eq(eventGame.eventId, eventId));
+  if (gameIds.length > 0) {
+    await tx.insert(eventGame).values(gameIds.map((gameId) => ({ eventId, gameId })));
+  }
 }
 
 function saveError(error: unknown, formData: FormData): FormState {
@@ -36,7 +59,7 @@ function saveError(error: unknown, formData: FormData): FormState {
 
 export async function createEvent(_: FormState, formData: FormData): Promise<FormState> {
   const { user } = await requirePermission({ event: ["create"] });
-  const { data, state } = parse(formData);
+  const { data, gameIds, state } = await parse(formData);
   if (!data) return state;
   if (data.startsAt <= new Date()) {
     return {
@@ -47,10 +70,14 @@ export async function createEvent(_: FormState, formData: FormData): Promise<For
 
   let created: { id: number }[];
   try {
-    created = await db
-      .insert(event)
-      .values({ ...data, creatorId: user.id })
-      .returning({ id: event.id });
+    created = await db.transaction(async (tx) => {
+      const rows = await tx
+        .insert(event)
+        .values({ ...data, creatorId: user.id })
+        .returning({ id: event.id });
+      await setGames(tx, rows[0].id, gameIds);
+      return rows;
+    });
   } catch (error) {
     return saveError(error, formData);
   }
@@ -66,16 +93,20 @@ export async function updateEvent(
   await requirePermission({ event: ["update"] });
   const eventId = validId(id);
   if (!eventId) return { message: "Cet événement n'existe plus." };
-  const { data, state } = parse(formData);
+  const { data, gameIds, state } = await parse(formData);
   if (!data) return state;
 
   let updated: { id: number }[];
   try {
-    updated = await db
-      .update(event)
-      .set(data)
-      .where(eq(event.id, eventId))
-      .returning({ id: event.id });
+    updated = await db.transaction(async (tx) => {
+      const rows = await tx
+        .update(event)
+        .set(data)
+        .where(eq(event.id, eventId))
+        .returning({ id: event.id });
+      if (rows[0]) await setGames(tx, eventId, gameIds);
+      return rows;
+    });
   } catch (error) {
     return saveError(error, formData);
   }

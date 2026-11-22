@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 import { AdminHeader } from "@/components/admin/admin-ui";
 import { requirePermission } from "@/lib/auth/guards";
-import { listEventTagOptions } from "@/lib/data/admin";
+import { listEventTagOptions, listGameOptions } from "@/lib/data/admin";
 
 import { createEvent } from "../actions";
 import { EventForm } from "../event-form";
@@ -26,6 +26,8 @@ export default function NewEventPage() {
 
 async function NewEvent() {
   await requirePermission({ event: ["create"] }, "/admin/evenements/nouveau");
-  const tags = await listEventTagOptions();
-  return <EventForm action={createEvent} tags={tags} submitLabel="Créer l'événement" />;
+  const [tags, games] = await Promise.all([listEventTagOptions(), listGameOptions()]);
+  return (
+    <EventForm action={createEvent} tags={tags} games={games} submitLabel="Créer l'événement" />
+  );
 }

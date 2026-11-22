@@ -6,6 +6,8 @@ export type FormState = {
   errors?: FieldErrors;
   /** Valeurs saisies, pour ne rien perdre quand la saisie est refusée. */
   values?: Record<string, string>;
+  /** Vrai quand l'action a réussi sans redirection (message de confirmation). */
+  ok?: boolean;
   /** Compteur d'envois, posé côté client par AdminForm. */
   n?: number;
 };
@@ -15,7 +17,9 @@ export const initialFormState: FormState = {};
 export function formValues(formData: FormData) {
   const values: Record<string, string> = {};
   for (const [key, value] of formData) {
-    if (typeof value === "string" && !key.startsWith("$")) values[key] = value;
+    if (typeof value !== "string" || key.startsWith("$")) continue;
+    // Champ répété (ex. gameIds) : valeurs jointes par des virgules.
+    values[key] = key in values ? `${values[key]},${value}` : value;
   }
   return values;
 }

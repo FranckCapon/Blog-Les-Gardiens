@@ -50,7 +50,17 @@ export const eventInput = z.object({
     return date;
   }),
   tagId: id("Choisis un type d'événement."),
+  gameIds: z
+    .array(z.coerce.number().int().positive(), { error: "Liste de jeux invalide." })
+    .max(30, "30 jeux au plus par événement.")
+    .transform((ids) => [...new Set(ids)])
+    .default([]),
 });
+
+/** Données d'un formulaire d'événement : les jeux arrivent en champs répétés. */
+export function eventFormData(formData: FormData) {
+  return { ...Object.fromEntries(formData), gameIds: formData.getAll("gameIds") };
+}
 
 export const gameInput = z
   .object({

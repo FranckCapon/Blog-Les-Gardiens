@@ -76,11 +76,19 @@ l'administration.
 | Articles          | modérateur, admin | admin     |
 | Événements        | modérateur, admin | admin     |
 | Ludothèque (jeux) | admin             | admin     |
+| Membres (rôles)   | admin             | —         |
 
 Les formulaires (`useActionState`) envoient à des Server Actions (`src/app/admin/*/actions.ts`)
 qui revérifient la permission, valident la saisie avec Zod (`src/lib/validation/content.ts`)
 et renvoient les erreurs champ par champ. Les dates d'événement se saisissent à l'heure de
-Paris. Le slug d'un article est fixé à sa création, pour ne pas casser les liens partagés.
+Paris, et les jeux au programme se choisissent par une recherche dans la ludothèque.
+Le slug d'un article est fixé à sa création, pour ne pas casser les liens partagés.
+
+L'écran Membres liste les comptes (recherche par pseudo, nom ou e-mail) et permet à un
+administrateur de changer le rôle d'un membre. Le changement passe par
+`auth.api.setRole` de Better Auth et prend effet à la page suivante du membre. Un
+administrateur ne peut pas changer son propre rôle, ce qui garantit qu'il reste toujours
+au moins un administrateur.
 
 ## Comptes et rôles
 
@@ -103,7 +111,8 @@ d'administration et chaque Server Action qui écrit des données commence par
 fait foi. Le rôle ne peut pas être choisi à l'inscription ni modifié par le membre ;
 la liste des membres n'est accessible qu'aux administrateurs.
 
-Pour désigner le premier administrateur, après son inscription :
+Pour désigner le premier administrateur, après son inscription (ensuite, les rôles se
+gèrent depuis `/admin/membres`) :
 
 ```bash
 npm run role -- adresse@exemple.fr admin
