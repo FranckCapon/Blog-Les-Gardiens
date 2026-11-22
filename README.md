@@ -35,15 +35,15 @@ typée et testée.
 
 ## Stack technique
 
-| Besoin              | Choix                                         | Pourquoi                                                                                   |
-| ------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Application         | **Next.js 16** (App Router), React 19         | Une seule application remplace le front et l'API : pages, données et actions au même endroit |
-| Langage             | **TypeScript** (mode strict)                  | Les erreurs de types sont détectées avant l'exécution                                      |
-| Base de données     | **PostgreSQL** avec **Drizzle ORM**           | Requêtes typées, schéma versionné par migrations SQL, reprise du schéma d'origine          |
-| Authentification    | **Better Auth**                               | Comptes, vérification d'e-mail, réinitialisation, rôles, sessions sécurisées               |
-| Interface           | **Tailwind CSS 4** et composants **shadcn/ui** | Composants accessibles, copiés dans le projet et modifiables                              |
-| Validation          | **Zod**                                       | Mêmes règles de saisie côté serveur, avec messages en français                             |
-| Tests               | **Vitest**, **Playwright**                    | Tests unitaires dans le dépôt ; parcours complets vérifiés dans un vrai navigateur         |
+| Besoin           | Choix                                          | Pourquoi                                                                                     |
+| ---------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Application      | **Next.js 16** (App Router), React 19          | Une seule application remplace le front et l'API : pages, données et actions au même endroit |
+| Langage          | **TypeScript** (mode strict)                   | Les erreurs de types sont détectées avant l'exécution                                        |
+| Base de données  | **PostgreSQL** avec **Drizzle ORM**            | Requêtes typées, schéma versionné par migrations SQL, reprise du schéma d'origine            |
+| Authentification | **Better Auth**                                | Comptes, vérification d'e-mail, réinitialisation, rôles, sessions sécurisées                 |
+| Interface        | **Tailwind CSS 4** et composants **shadcn/ui** | Composants accessibles, copiés dans le projet et modifiables                                 |
+| Validation       | **Zod**                                        | Mêmes règles de saisie côté serveur, avec messages en français                               |
+| Tests            | **Vitest**, **Playwright**                     | Tests unitaires dans le dépôt ; parcours complets vérifiés dans un vrai navigateur           |
 
 Les choix et les alternatives étudiées (React Router 7, Prisma) sont détaillés dans la
 proposition d'architecture validée le 21 novembre 2026.
@@ -99,16 +99,16 @@ npm run dev                  # http://localhost:3000
 
 ## Avancement
 
-| Étape | Contenu                                                                    | État       |
-| ----- | -------------------------------------------------------------------------- | ---------- |
-| 1     | Socle de l'application (Next.js, TypeScript, Tailwind, outillage)          | Terminée   |
-| 2     | Base de données, authentification et rôles                                 | Terminée   |
-| 3     | Mise en page : en-tête, menu mobile, accueil, club, contact, mentions      | Terminée   |
-| 4     | Contenu public : articles, ludothèque, événements, données de démonstration | Terminée   |
-| 5     | Inscriptions aux événements et administration du contenu                   | Terminée   |
-| 6     | Jeux au programme des événements et gestion des rôles                      | Terminée   |
-| 7     | Reprise des données de l'ancienne base de production                       | À venir    |
-| 8     | Mise en ligne, puis retrait de l'ancienne version                          | À venir    |
+| Étape | Contenu                                                                     | État     |
+| ----- | --------------------------------------------------------------------------- | -------- |
+| 1     | Socle de l'application (Next.js, TypeScript, Tailwind, outillage)           | Terminée |
+| 2     | Base de données, authentification et rôles                                  | Terminée |
+| 3     | Mise en page : en-tête, menu mobile, accueil, club, contact, mentions       | Terminée |
+| 4     | Contenu public : articles, ludothèque, événements, données de démonstration | Terminée |
+| 5     | Inscriptions aux événements et administration du contenu                    | Terminée |
+| 6     | Jeux au programme des événements et gestion des rôles                       | Terminée |
+| 7     | Reprise des données de l'ancienne base de production                        | À venir  |
+| 8     | Mise en ligne, puis retrait de l'ancienne version                           | À venir  |
 
 **Prochaines étapes :**
 
