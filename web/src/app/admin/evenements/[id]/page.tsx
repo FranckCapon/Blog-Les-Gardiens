@@ -8,7 +8,13 @@ import { AdminHeader, parseId } from "@/components/admin/admin-ui";
 import { DeleteForm } from "@/components/admin/delete-form";
 import { requirePermission } from "@/lib/auth/guards";
 import { roleCan } from "@/lib/auth/permissions";
-import { getEventForEdit, listEventParticipants, listEventTagOptions } from "@/lib/data/admin";
+import {
+  getEventForEdit,
+  listEventGameIds,
+  listEventParticipants,
+  listEventTagOptions,
+  listGameOptions,
+} from "@/lib/data/admin";
 import { formatDate, toParisInput } from "@/lib/format";
 
 import { deleteEvent, updateEvent } from "../actions";
@@ -34,10 +40,12 @@ async function EditEvent({ params }: Pick<PageProps<"/admin/evenements/[id]">, "
   const { id: raw } = await params;
   const { user } = await requirePermission({ event: ["update"] }, `/admin/evenements/${raw}`);
   const id = parseId(raw);
-  const [event, tags, participants] = await Promise.all([
+  const [event, tags, participants, games, gameIds] = await Promise.all([
     id ? getEventForEdit(id) : null,
     listEventTagOptions(),
     id ? listEventParticipants(id) : [],
+    listGameOptions(),
+    id ? listEventGameIds(id) : [],
   ]);
   if (!event) notFound();
 
@@ -53,11 +61,13 @@ async function EditEvent({ params }: Pick<PageProps<"/admin/evenements/[id]">, "
       <EventForm
         action={updateEvent.bind(null, event.id)}
         tags={tags}
+        games={games}
         defaults={{
           title: event.title,
           description: event.description,
           tagId: event.tagId,
           startsAt: toParisInput(event.startsAt),
+          gameIds,
         }}
         submitLabel="Enregistrer"
       />

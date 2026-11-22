@@ -1,12 +1,13 @@
 import "server-only";
 
-import { and, asc, count, desc, eq, ilike, isNull, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, isNull, or, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import {
   article,
   articleTag,
   event,
+  eventGame,
   eventParticipant,
   eventTag,
   game,
@@ -113,4 +114,55 @@ export async function listEventTagOptions() {
 
 export async function listGameTypeOptions() {
   return byName(await db.select().from(gameType));
+}
+
+/** Toute la ludothèque (id et titre) pour le choix des jeux d'un événement. */
+export async function listGameOptions() {
+  return db.select({ id: game.id, title: game.title }).from(game).orderBy(asc(game.title));
+}
+
+export async function listEventGameIds(eventId: number) {
+  const rows = await db
+    .select({ id: eventGame.gameId })
+    .from(eventGame)
+    .innerJoin(game, eq(game.id, eventGame.gameId))
+    .where(eq(eventGame.eventId, eventId))
+    .orderBy(asc(game.title));
+  return rows.map((r) => r.id);
+}
+
+export const ADMIN_MEMBERS_PER_PAGE = 25;
+
+/** Liste des membres : réservée aux administrateurs (permission user:list). */
+export async function listMembers({ q, page }: { q?: string; page: number }) {
+  const pattern = q ? `%${q.replace(/[%_\\]/g, "\\$&")}%` : undefined;
+  const where = pattern
+    ? or(
+        ilike(user.name, pattern),
+        ilike(user.email, pattern),
+        ilike(user.firstName, pattern),
+        ilike(user.lastName, pattern),
+      )
+    : undefined;
+  const [items, [{ total }]] = await Promise.all([
+    db
+      .select({
+        id: user.id,
+        name: user.name,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        role: user.role,
+        banned: user.banned,
+        createdAt: user.createdAt,
+      })
+      .from(user)
+      .where(where)
+      .orderBy(asc(user.name))
+      .limit(ADMIN_MEMBERS_PER_PAGE)
+      .offset((page - 1) * ADMIN_MEMBERS_PER_PAGE),
+    db.select({ total: count() }).from(user).where(where),
+  ]);
+  return { items, total, pageCount: Math.max(1, Math.ceil(total / ADMIN_MEMBERS_PER_PAGE)) };
 }

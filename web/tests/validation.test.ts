@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import { fromParisInput, toParisInput } from "@/lib/format";
-import { articleInput, eventInput, fieldErrors, gameInput } from "@/lib/validation/content";
+import {
+  articleInput,
+  eventFormData,
+  eventInput,
+  fieldErrors,
+  gameInput,
+} from "@/lib/validation/content";
 
 describe("heure de Paris", () => {
   it("convertit l'heure d'hiver et l'heure d'été", () => {
@@ -44,6 +50,25 @@ describe("saisie d'un événement", () => {
       tagId: "1",
     });
     expect(r.startsAt.toISOString()).toBe("2026-12-05T19:30:00.000Z");
+  });
+
+  it("lit les jeux au programme en champs répétés, sans doublon", () => {
+    const fd = new FormData();
+    for (const [k, v] of Object.entries({
+      title: "Tournoi",
+      description: "Un tournoi convivial pour tous.",
+      startsAt: "2026-12-05T20:30",
+      tagId: "1",
+    }))
+      fd.append(k, v);
+    fd.append("gameIds", "12");
+    fd.append("gameIds", "7");
+    fd.append("gameIds", "12");
+    expect(eventInput.parse(eventFormData(fd)).gameIds).toEqual([12, 7]);
+    fd.delete("gameIds");
+    expect(eventInput.parse(eventFormData(fd)).gameIds).toEqual([]);
+    fd.append("gameIds", "abc");
+    expect(eventInput.safeParse(eventFormData(fd)).success).toBe(false);
   });
 
   it("refuse une date vide", () => {

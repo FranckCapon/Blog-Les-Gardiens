@@ -63,17 +63,26 @@ export async function Flash({
   );
 }
 
-export function AdminTable({ head, children }: { head: string[]; children: ReactNode }) {
+type Column = string | { label: string; className?: string };
+
+export function AdminTable({ head, children }: { head: Column[]; children: ReactNode }) {
   return (
     <div className="overflow-x-auto rounded-lg border">
       <table className="w-full text-left text-sm">
         <thead className="bg-muted/60 text-muted-foreground">
           <tr>
-            {head.map((h) => (
-              <th key={h} scope="col" className="px-4 py-2 font-medium whitespace-nowrap">
-                {h}
-              </th>
-            ))}
+            {head.map((h) => {
+              const { label, className } = typeof h === "string" ? { label: h } : h;
+              return (
+                <th
+                  key={label}
+                  scope="col"
+                  className={`px-4 py-2 font-medium whitespace-nowrap ${className ?? ""}`}
+                >
+                  {label}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody className="divide-y">{children}</tbody>

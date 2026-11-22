@@ -1,4 +1,4 @@
-import { CalendarDays, Dices, Newspaper } from "lucide-react";
+import { CalendarDays, Dices, Newspaper, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -48,6 +48,13 @@ async function Admin() {
       text: "Ajouter, corriger ou retirer des jeux du club.",
       show: can({ game: ["update"] }),
     },
+    {
+      href: "/admin/membres",
+      icon: Users,
+      title: "Membres",
+      text: "Voir les inscrits et attribuer les rôles.",
+      show: can({ user: ["list", "set-role"] }),
+    },
   ].filter((s) => s.show);
 
   const rights = [
@@ -65,7 +72,7 @@ async function Admin() {
         Connecté en tant que <strong className="text-foreground">{user.name}</strong> (
         {roleLabels[user.role as RoleName] ?? user.role}).
       </p>
-      <ul className="grid gap-4 sm:grid-cols-3">
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {sections.map((s) => (
           <li key={s.href}>
             <Link

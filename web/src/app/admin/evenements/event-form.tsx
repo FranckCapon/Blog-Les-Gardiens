@@ -3,17 +3,27 @@
 import { SelectField, TextAreaField, TextField } from "@/components/admin/fields";
 import { AdminForm, type FormAction } from "@/components/admin/form-shell";
 
+import { GamePicker } from "./game-picker";
+
 type Option = { id: number; name: string };
-type Defaults = { title?: string; description?: string; startsAt?: string; tagId?: number };
+type Defaults = {
+  title?: string;
+  description?: string;
+  startsAt?: string;
+  tagId?: number;
+  gameIds?: number[];
+};
 
 export function EventForm({
   action,
   tags,
+  games,
   defaults = {},
   submitLabel,
 }: {
   action: FormAction;
   tags: Option[];
+  games: { id: number; title: string }[];
   defaults?: Defaults;
   submitLabel: string;
 }) {
@@ -54,6 +64,15 @@ export function EventForm({
             required
             defaultValue={values?.description ?? defaults.description}
             error={errors.description}
+          />
+          <GamePicker
+            games={games}
+            defaultSelected={
+              values
+                ? (values.gameIds ?? "").split(",").filter(Boolean).map(Number)
+                : (defaults.gameIds ?? [])
+            }
+            error={errors.gameIds}
           />
         </>
       )}
