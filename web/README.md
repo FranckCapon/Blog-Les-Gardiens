@@ -55,8 +55,32 @@ Les fichiers sources sont dans `scripts/seed-data/`.
 
 Les pages Articles, Nos jeux et Événements lisent la base côté serveur via `src/lib/data/`.
 Les résultats sont mis en cache une heure (`"use cache"`, étiquettes `articles`, `games`,
-`events`) : les futures actions d'administration appelleront `updateTag(...)` pour les rafraîchir.
+`events`). Chaque Server Action qui écrit appelle `updateTag(...)` sur les étiquettes touchées :
+la page suivante affiche tout de suite la donnée à jour.
 Les filtres passent par l'URL (`/jeux?q=catan&joueurs=4`), ce qui rend les recherches partageables.
+
+## Inscriptions aux événements
+
+Un membre connecté s'inscrit ou se désinscrit depuis la page de l'événement, tant qu'il
+n'a pas commencé. Une désinscription garde la ligne (`cancelled_at`) et une nouvelle
+inscription la réactive. Ses inscriptions à venir apparaissent sur `/profil`. Le public ne
+voit que le nombre d'inscrits ; les pseudos ne sont visibles que de l'équipe, dans
+l'administration.
+
+## Administration
+
+`/admin` propose les écrans permis par le rôle :
+
+| Écran             | Créer / modifier  | Supprimer |
+| ----------------- | ----------------- | --------- |
+| Articles          | modérateur, admin | admin     |
+| Événements        | modérateur, admin | admin     |
+| Ludothèque (jeux) | admin             | admin     |
+
+Les formulaires (`useActionState`) envoient à des Server Actions (`src/app/admin/*/actions.ts`)
+qui revérifient la permission, valident la saisie avec Zod (`src/lib/validation/content.ts`)
+et renvoient les erreurs champ par champ. Les dates d'événement se saisissent à l'heure de
+Paris. Le slug d'un article est fixé à sa création, pour ne pas casser les liens partagés.
 
 ## Comptes et rôles
 

@@ -18,7 +18,13 @@ import {
 import { user } from "./auth";
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
-const updatedAt = () => timestamp("updated_at", { withTimezone: true }).$onUpdate(() => new Date());
+// Sans valeur par défaut, Drizzle appellerait aussi $onUpdate à l'insertion, avec une
+// heure JS antérieure de quelques microsecondes au now() de PostgreSQL : la contrainte
+// updated_at >= created_at échouerait. À la création, updated_at reste donc vide.
+const updatedAt = () =>
+  timestamp("updated_at", { withTimezone: true })
+    .$defaultFn(() => null as unknown as Date)
+    .$onUpdate(() => new Date());
 
 // --- Étiquettes -----------------------------------------------------------
 

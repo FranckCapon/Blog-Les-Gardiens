@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { Badge } from "@/components/content/badge";
+import { EventRegistration } from "@/components/content/event-registration";
 import { getEvent } from "@/lib/data/events";
 import { formatDateTime } from "@/lib/format";
 
@@ -89,14 +90,9 @@ async function EventDetail({ params }: Pick<PageProps<"/evenements/[id]">, "para
           </ul>
         </section>
       ) : null}
-      <p className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
-        L&apos;inscription en ligne aux événements arrive à la prochaine étape. En attendant,
-        parlez-en aux référents au club ou{" "}
-        <Link href="/contact" className="text-primary underline underline-offset-4">
-          écrivez-nous
-        </Link>
-        .
-      </p>
+      <Suspense fallback={<div className="h-16 rounded-lg border bg-muted/50" />}>
+        <EventRegistration eventId={event.id} startsAt={event.startsAt} />
+      </Suspense>
     </article>
   );
 }
