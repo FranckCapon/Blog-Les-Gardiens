@@ -39,3 +39,36 @@ export function currentHour() {
   d.setMinutes(0, 0, 0);
   return d.toISOString();
 }
+
+const partsFmt = new Intl.DateTimeFormat("en-GB", {
+  timeZone: TZ,
+  hourCycle: "h23",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+/** Date → « AAAA-MM-JJTHH:MM » à l'heure de Paris (valeur d'un champ datetime-local). */
+export function toParisInput(d: Date) {
+  const p = Object.fromEntries(partsFmt.formatToParts(d).map((x) => [x.type, x.value]));
+  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+}
+
+/** « AAAA-MM-JJTHH:MM » saisi à l'heure de Paris → Date (null si invalide). */
+export function fromParisInput(value: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value);
+  if (!m) return null;
+  const [y, mo, d, h, mi] = m.slice(1).map(Number);
+  const wanted = Date.UTC(y, mo - 1, d, h, mi);
+  // On part de l'heure UTC puis on corrige du décalage de Paris (deux passes
+  // suffisent, y compris autour des changements d'heure).
+  let guess = wanted;
+  for (let i = 0; i < 2; i++) {
+    const shown = new Date(`${toParisInput(new Date(guess))}:00Z`).getTime();
+    guess += wanted - shown;
+  }
+  const result = new Date(guess);
+  return toParisInput(result) === value ? result : null;
+}
