@@ -7,7 +7,9 @@ import { getSession } from "@/lib/auth/guards";
 import { roleCan } from "@/lib/auth/permissions";
 import { club } from "@/lib/site";
 
-import { MainNav } from "./main-nav";
+import { MenuIcon } from "lucide-react";
+
+import { MainNav, MainNavLinks } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
 
 export function SiteHeader() {
@@ -28,19 +30,29 @@ export function SiteHeader() {
           </span>
         </Link>
         <div className="ml-auto flex items-center gap-2">
-          <MainNav />
+          <Suspense fallback={<MainNavLinks pathname="" />}>
+            <MainNav />
+          </Suspense>
           <div className="hidden items-center gap-2 lg:flex">
             <Suspense fallback={null}>
               <AccountLinks />
             </Suspense>
           </div>
-          <MobileNav
-            account={
-              <Suspense fallback={null}>
-                <AccountLinks />
-              </Suspense>
+          <Suspense
+            fallback={
+              <Button variant="ghost" size="icon" className="lg:hidden" disabled aria-label="Menu">
+                <MenuIcon />
+              </Button>
             }
-          />
+          >
+            <MobileNav
+              account={
+                <Suspense fallback={null}>
+                  <AccountLinks />
+                </Suspense>
+              }
+            />
+          </Suspense>
         </div>
       </div>
     </header>

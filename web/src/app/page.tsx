@@ -1,9 +1,26 @@
-import { CalendarDays, Clock, Dices, MapPin, Sparkles, Swords, Users } from "lucide-react";
+import {
+  CalendarDays,
+  Clock,
+  Dices,
+  MapPin,
+  Newspaper,
+  Sparkles,
+  Swords,
+  Users,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { connection } from "next/server";
+import { Suspense } from "react";
+
+import { ArticleCard } from "@/components/content/article-card";
+import { EventItem } from "@/components/content/event-item";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { latestArticles } from "@/lib/data/articles";
+import { upcomingEvents } from "@/lib/data/events";
+import { currentHour } from "@/lib/format";
 import { club } from "@/lib/site";
 
 export default function Home() {
@@ -132,36 +149,74 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-6xl px-4 py-14">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Link href="/evenements" className="group">
-            <Card className="h-full transition-colors group-hover:border-primary">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <CalendarDays className="size-5 text-primary" aria-hidden />
-                  Prochains événements
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                Soirées jeux, tournois et sorties grandeur nature organisés par le club.
-              </CardContent>
-            </Card>
-          </Link>
-          <Link href="/jeux" className="group">
-            <Card className="h-full transition-colors group-hover:border-primary">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Dices className="size-5 text-primary" aria-hidden />
-                  La ludothèque
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                Les jeux du club, à découvrir et à essayer sur place.
-              </CardContent>
-            </Card>
-          </Link>
+      <section className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-14 lg:grid-cols-2">
+        <div className="grid content-start gap-5">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className="flex items-center gap-2 font-display text-2xl font-semibold tracking-wide">
+              <CalendarDays className="size-6 text-primary" aria-hidden />
+              Prochains événements
+            </h2>
+            <Link
+              href="/evenements"
+              className="text-sm font-medium text-primary underline underline-offset-4"
+            >
+              Tout voir
+            </Link>
+          </div>
+          <Suspense fallback={<p className="text-sm text-muted-foreground">Chargement…</p>}>
+            <NextEvents />
+          </Suspense>
+        </div>
+        <div className="grid content-start gap-5">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className="flex items-center gap-2 font-display text-2xl font-semibold tracking-wide">
+              <Newspaper className="size-6 text-primary" aria-hidden />
+              Derniers articles
+            </h2>
+            <Link
+              href="/articles"
+              className="text-sm font-medium text-primary underline underline-offset-4"
+            >
+              Tout voir
+            </Link>
+          </div>
+          <Suspense fallback={<p className="text-sm text-muted-foreground">Chargement…</p>}>
+            <LatestArticles />
+          </Suspense>
         </div>
       </section>
     </main>
+  );
+}
+
+async function NextEvents() {
+  // Lu à chaque requête (dates relatives à maintenant), puis mis en cache une heure.
+  await connection();
+  const events = await upcomingEvents(currentHour());
+  if (events.length === 0) {
+    return <p className="text-muted-foreground">Aucun événement prévu pour le moment.</p>;
+  }
+  return (
+    <ul className="grid gap-3">
+      {events.map((e) => (
+        <li key={e.id}>
+          <EventItem event={e} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+async function LatestArticles() {
+  await connection();
+  const articles = await latestArticles(3);
+  return (
+    <ul className="grid gap-3">
+      {articles.map((a) => (
+        <li key={a.id}>
+          <ArticleCard article={a} />
+        </li>
+      ))}
+    </ul>
   );
 }

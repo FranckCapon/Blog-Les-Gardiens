@@ -16,7 +16,8 @@
     "db:pull": "drizzle-kit pull",
     "db:studio": "drizzle-kit studio",
     "test": "vitest run",
-    "role": "tsx scripts/set-role.mts"
+    "role": "tsx scripts/set-role.mts",
+    "db:seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
