@@ -4,6 +4,7 @@
 // par les requêtes relationnelles de Drizzle (voir relations.ts).
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   check,
   date,
   integer,
@@ -48,6 +49,8 @@ export const article = pgTable(
   {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
     title: text("title").notNull().unique(),
+    // Identifiant lisible utilisé dans l'URL : /articles/<slug>
+    slug: text("slug").notNull().unique(),
     content: text("content").notNull(),
     authorId: text("author_id")
       .notNull()
@@ -71,30 +74,39 @@ export const game = pgTable(
   {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
     title: text("title").notNull(),
-    description: text("description").notNull(),
+    // Les fiches importées de la collection BoardGameGeek du club n'ont ni description,
+    // ni auteur, ni éditeur, ni âge minimum : ces colonnes sont donc facultatives.
+    description: text("description"),
     minPlayers: integer("min_players").notNull(),
     maxPlayers: integer("max_players"),
-    minAge: integer("min_age").notNull(),
-    durationMinutes: integer("duration_minutes").notNull(),
+    minAge: integer("min_age"),
+    durationMinutes: integer("duration_minutes"),
     quantity: integer("quantity").notNull().default(1),
-    purchasedOn: date("purchased_on").notNull().defaultNow(),
-    author: text("author").notNull(),
-    publisher: text("publisher").notNull(),
-    year: integer("year").notNull(),
+    purchasedOn: date("purchased_on"),
+    author: text("author"),
+    publisher: text("publisher"),
+    year: integer("year"),
+    isExpansion: boolean("is_expansion").notNull().default(false),
+    bggId: integer("bgg_id").unique(),
+    imageUrl: text("image_url"),
+    thumbnailUrl: text("thumbnail_url"),
     typeId: integer("type_id")
       .notNull()
       .references(() => gameType.id),
   },
   (t) => [
-    check("game_description_length", sql`char_length(trim(${t.description})) >= 15`),
+    check(
+      "game_description_length",
+      sql`${t.description} IS NULL OR char_length(trim(${t.description})) >= 15`,
+    ),
     check(
       "game_players",
       sql`${t.minPlayers} > 0 AND (${t.maxPlayers} IS NULL OR ${t.maxPlayers} >= ${t.minPlayers})`,
     ),
-    check("game_min_age", sql`${t.minAge} > 0`),
-    check("game_duration", sql`${t.durationMinutes} > 0`),
+    check("game_min_age", sql`${t.minAge} IS NULL OR ${t.minAge} > 0`),
+    check("game_duration", sql`${t.durationMinutes} IS NULL OR ${t.durationMinutes} > 0`),
     check("game_quantity", sql`${t.quantity} > 0`),
-    check("game_year", sql`${t.year} > 1100 AND ${t.year} < 2100`),
+    check("game_year", sql`${t.year} IS NULL OR (${t.year} > 1100 AND ${t.year} < 2100)`),
   ],
 );
 

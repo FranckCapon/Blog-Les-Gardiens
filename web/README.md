@@ -18,6 +18,7 @@ npm install
 cp .env.example .env.local   # puis renseigner BETTER_AUTH_SECRET
 npm run db:up                # lance PostgreSQL 17 en Docker
 npm run db:migrate           # crée les tables
+npm run db:seed              # facultatif : données de démonstration
 npm run dev                  # http://localhost:3000
 ```
 
@@ -36,7 +37,26 @@ npm run dev                  # http://localhost:3000
 | `npm run db:generate` | Génère une migration SQL depuis `src/lib/db/schema.ts` |
 | `npm run db:migrate`  | Applique les migrations du dossier `drizzle/`          |
 | `npm run db:pull`     | Génère un schéma Drizzle à partir d'une base existante |
+| `npm run db:seed`     | Ajoute les données de démonstration (base vide)        |
 | `npm run db:studio`   | Ouvre Drizzle Studio pour explorer la base             |
+
+## Données de démonstration
+
+`npm run db:seed` remplit une base vide avec :
+
+- les 17 articles de l'ancien site (`BACK/data/article_seed.sql`) ;
+- les 412 jeux possédés par le club, issus de son export BoardGameGeek (`BACK/data/data2.sql`) ;
+- 5 événements, dont 3 à venir datés par rapport au jour du lancement ;
+- 4 comptes fictifs en `@example.org` (mot de passe `demo-gardiens`), dont un modérateur et un admin.
+
+Les fichiers sources sont dans `scripts/seed-data/`.
+
+## Contenu public
+
+Les pages Articles, Nos jeux et Événements lisent la base côté serveur via `src/lib/data/`.
+Les résultats sont mis en cache une heure (`"use cache"`, étiquettes `articles`, `games`,
+`events`) : les futures actions d'administration appelleront `updateTag(...)` pour les rafraîchir.
+Les filtres passent par l'URL (`/jeux?q=catan&joueurs=4`), ce qui rend les recherches partageables.
 
 ## Comptes et rôles
 
@@ -86,6 +106,7 @@ src/
   app/profil/       profil du membre connecté
   app/admin/        administration (modérateurs et administrateurs)
   lib/auth/         Better Auth : configuration, rôles, contrôles d'accès
+  lib/data/         lectures en base (articles, jeux, événements), en cache
   lib/db/schema/    schéma Drizzle (comptes et contenu du site)
   proxy.ts          redirection rapide vers la connexion sur les pages privées
   lib/utils.ts      utilitaire cn() pour les classes Tailwind

@@ -12,7 +12,11 @@ function isActive(pathname: string, href: string) {
 
 /** Liens principaux, en ligne sur grand écran. */
 export function MainNav() {
-  const pathname = usePathname();
+  return <MainNavLinks pathname={usePathname()} />;
+}
+
+/** Version sans lien actif, affichée avant que l'URL ne soit connue (pré-rendu). */
+export function MainNavLinks({ pathname }: { pathname: string }) {
   return (
     <nav aria-label="Navigation principale" className="hidden lg:block">
       <ul className="flex items-center gap-1">
