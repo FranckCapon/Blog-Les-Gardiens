@@ -1,28 +1,53 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth/guards";
 import { roleCan } from "@/lib/auth/permissions";
+import { club } from "@/lib/site";
+
+import { MainNav } from "./main-nav";
+import { MobileNav } from "./mobile-nav";
 
 export function SiteHeader() {
   return (
-    <header className="border-b">
-      <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4">
-        <Link href="/" className="font-semibold">
-          Les Gardiens de la Légende
+    <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75">
+      <div className="relative mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-4">
+        <Link href="/" className="flex items-center gap-3" aria-label={`${club.name}, accueil`}>
+          <Image
+            src="/logo-noir.png"
+            alt=""
+            width={40}
+            height={37}
+            priority
+            className="dark:invert"
+          />
+          <span className="font-display text-base leading-tight font-semibold tracking-wide sm:text-lg">
+            {club.name}
+          </span>
         </Link>
-        <nav className="flex items-center gap-2">
-          <Suspense fallback={null}>
-            <UserNav />
-          </Suspense>
-        </nav>
+        <div className="ml-auto flex items-center gap-2">
+          <MainNav />
+          <div className="hidden items-center gap-2 lg:flex">
+            <Suspense fallback={null}>
+              <AccountLinks />
+            </Suspense>
+          </div>
+          <MobileNav
+            account={
+              <Suspense fallback={null}>
+                <AccountLinks />
+              </Suspense>
+            }
+          />
+        </div>
       </div>
     </header>
   );
 }
 
-async function UserNav() {
+async function AccountLinks() {
   const session = await getSession();
   if (!session) {
     return (
