@@ -24,21 +24,33 @@ npm run dev                  # http://localhost:3000
 
 ## Scripts
 
-| Script                | Rôle                                                   |
-| --------------------- | ------------------------------------------------------ |
-| `npm run dev`         | Serveur de développement                               |
-| `npm run build`       | Build de production                                    |
-| `npm run test`        | Tests unitaires (Vitest)                               |
-| `npm run role`        | Change le rôle d'un membre                             |
-| `npm run lint`        | ESLint (règles Next.js + TypeScript)                   |
-| `npm run typecheck`   | Vérification des types TypeScript                      |
-| `npm run format`      | Formatage Prettier (tri des classes Tailwind inclus)   |
-| `npm run db:up`       | Démarre PostgreSQL avec Docker Compose                 |
-| `npm run db:generate` | Génère une migration SQL depuis `src/lib/db/schema.ts` |
-| `npm run db:migrate`  | Applique les migrations du dossier `drizzle/`          |
-| `npm run db:pull`     | Génère un schéma Drizzle à partir d'une base existante |
-| `npm run db:seed`     | Ajoute les données de démonstration (base vide)        |
-| `npm run db:studio`   | Ouvre Drizzle Studio pour explorer la base             |
+| Script                | Rôle                                                         |
+| --------------------- | ------------------------------------------------------------ |
+| `npm run dev`         | Serveur de développement                                     |
+| `npm run build`       | Build de production                                          |
+| `npm run test`        | Tests unitaires (Vitest)                                     |
+| `npm run role`        | Change le rôle d'un membre                                   |
+| `npm run lint`        | ESLint (règles Next.js + TypeScript)                         |
+| `npm run typecheck`   | Vérification des types TypeScript                            |
+| `npm run format`      | Formatage Prettier (tri des classes Tailwind inclus)         |
+| `npm run db:up`       | Démarre PostgreSQL avec Docker Compose                       |
+| `npm run db:generate` | Génère une migration SQL depuis `src/lib/db/schema.ts`       |
+| `npm run db:migrate`  | Applique les migrations du dossier `drizzle/`                |
+| `npm run db:check`    | Vérifie que la base répond et que les migrations sont à jour |
+| `npm run db:pull`     | Génère un schéma Drizzle à partir d'une base existante       |
+| `npm run db:seed`     | Ajoute les données de démonstration (base vide)              |
+| `npm run db:studio`   | Ouvre Drizzle Studio pour explorer la base                   |
+
+## En cas d'erreur « Failed query »
+
+Ce message de Drizzle ne montre que la requête SQL. En développement, le terminal de
+`npm run dev` affiche maintenant la vraie cause et la commande à lancer, et un avertissement
+apparaît dès le démarrage si la base ne répond pas ou si des migrations manquent.
+`npm run db:check` fait la même vérification à la demande. Les deux cas les plus fréquents :
+
+- `ECONNREFUSED` : PostgreSQL n'est pas lancé. Lancer `npm run db:up` (Docker doit tourner).
+- `relation "…" does not exist` : les tables n'existent pas encore. Lancer `npm run db:migrate`,
+  puis `npm run db:seed` pour les données de démonstration.
 
 ## Données de démonstration
 

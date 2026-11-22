@@ -1,6 +1,13 @@
+import path from "node:path";
+
 import type { NextConfig } from "next";
 
+// Le dépôt contient aussi l'ancienne version (yarn.lock à la racine) : on fixe la
+// racine du projet sur web/ pour que Next.js ne la devine pas à tort.
+const root = path.resolve(__dirname);
+
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: root,
   cacheComponents: true,
   partialPrefetching: true,
   images: {
@@ -12,6 +19,7 @@ const nextConfig: NextConfig = {
     authInterrupts: true,
   },
   turbopack: {
+    root,
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],
