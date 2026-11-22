@@ -13,6 +13,7 @@
     "db:up": "docker compose up -d",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:check": "tsx scripts/db-check.ts",
     "db:pull": "drizzle-kit pull",
     "db:studio": "drizzle-kit studio",
     "test": "vitest run",
